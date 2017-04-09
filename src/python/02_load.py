@@ -6,6 +6,7 @@ import psycopg2
 from sqlalchemy import create_engine
 
 usage = """
+Load data to PostgreSQL
 """
 
 def getargs():

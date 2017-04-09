@@ -13,3 +13,5 @@ $(dirs):
 # Download CSV data set from https://webrobots.io/kickstarter-datasets/
 data/01_data_set:
 	python src/python/01_download.py $@
+
+#python 02_load.py /Users/csiu/repo/kick/data/01_data_set
