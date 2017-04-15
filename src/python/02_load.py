@@ -4,6 +4,7 @@ import os
 import argparse
 import psycopg2
 from sqlalchemy import create_engine
+import ast
 
 usage = """
 Load data to PostgreSQL
@@ -37,7 +38,9 @@ def load_data(data_files, dbname="kick", tblname="info",
     if create_table:
         sql = """CREATE TABLE {table} (
             index INTEGER,
-        %s);""".format(table=tblname)
+            %s,
+            topic VARCHAR
+            );""".format(table=tblname)
         sql_details = ""
         df = pd.read_csv(data_files[0])
         for col_name,col_type in zip(df.columns, df.dtypes):
@@ -60,6 +63,7 @@ def load_data(data_files, dbname="kick", tblname="info",
     for i,data_file in enumerate(data_files):
         fname = os.path.basename(data_file)
         df = pd.read_csv(data_file)
+        df['topic'] = df['category'].map(lambda x: ast.literal_eval(x)['name'])
         try:
             msg = "Processing {i} of {num_files}: {fname}".format(
                     i=i+1, num_files=num_files, fname=fname)
