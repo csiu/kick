@@ -14,4 +14,5 @@ $(dirs):
 data/01_data_set:
 	python src/python/01_download.py $@
 
-#python 02_load.py /Users/csiu/repo/kick/data/01_data_set
+# Load data to PostgreSQL
+#python src/python/02_load.py /Users/csiu/repo/kick/data/01_data_set
