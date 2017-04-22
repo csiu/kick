@@ -85,27 +85,28 @@ def compute_distance(U, i=0, sort=False, top_n=None, metric='euclidean'):
     return(df_dist)
 
 
-# Get and preprocess data
-df = get_data()
-_ =  preprocess_data(df)
-
-# Make count matrix
-cv = CountVectorizer()
-X = cv.fit_transform(df['doc_processed'])
-
-# SVD
-U, s, Vh = randomized_svd(X, n_components=100, n_iter=5, random_state=5)
-
-# Compute distance and get top results
-top_n = compute_distance(U, i=0, sort=True, top_n=5)
-
-# Print
-results = []
-counter = 0
-for index, row in df.iloc[top_n.index].iterrows():
-    row["dist"] = top_n.iloc[counter]["dist"]
-    results.append(row)
-    counter += 1
-
-    print('>> %s | %s' % (row['id'], row['doc_processed']),
-          row['document'], "\n", sep="\n")
+if __name__ == '__main__':
+    # Get and preprocess data
+    df = get_data()
+    _ =  preprocess_data(df)
+    
+    # Make count matrix
+    cv = CountVectorizer()
+    X = cv.fit_transform(df['doc_processed'])
+    
+    # SVD
+    U, s, Vh = randomized_svd(X, n_components=100, n_iter=5, random_state=5)
+    
+    # Compute distance and get top results
+    top_n = compute_distance(U, i=0, sort=True, top_n=5)
+    
+    # Print
+    results = []
+    counter = 0
+    for index, row in df.iloc[top_n.index].iterrows():
+        row["dist"] = top_n.iloc[counter]["dist"]
+        results.append(row)
+        counter += 1
+    
+        print('>> %s | %s' % (row['id'], row['doc_processed']),
+              row['document'], "\n", sep="\n")
