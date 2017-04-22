@@ -1,6 +1,7 @@
 import sys
 sys.path.append("/Users/csiu/repo/kick/src/python")
 
+import argparse
 import custom
 import pandas as pd
 import numpy as np
@@ -10,6 +11,21 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.utils.extmath import randomized_svd
 from sklearn.metrics import pairwise_distances
 
+def get_args():
+    parser = argparse.ArgumentParser(description="")
+
+    parser.add_argument('-s', '--num_singular_values', default=100, type=int,
+                        help="Number of singular values to use from SVD")
+
+    parser.add_argument('-n', '--num_results', default=None, type=int,
+                        help="Number of similar documents to print in the results")
+
+    parser.add_argument('-i', '--index_document0', default=0, type=int,
+                        help="Index of query document")
+
+    args = parser.parse_args()
+
+    return(args)
 
 def get_data():
     """
@@ -86,6 +102,11 @@ def compute_distance(U, i=0, sort=False, top_n=None, metric='euclidean'):
 
 
 if __name__ == '__main__':
+    args = get_args()
+    num_singular_values = args.num_singular_values
+    index_document0 = args.index_document0
+    num_results = args.num_results
+
     # Get and preprocess data
     df = get_data()
     _ =  preprocess_data(df)
@@ -95,11 +116,13 @@ if __name__ == '__main__':
     X = cv.fit_transform(df['doc_processed'])
     
     # SVD
-    U, s, Vh = randomized_svd(X, n_components=100, n_iter=5, random_state=5)
-    
+    U, s, Vh = randomized_svd(X, n_components=num_singular_values,
+                              n_iter=5, random_state=5)
+
     # Compute distance and get top results
-    top_n = compute_distance(U, i=0, sort=True, top_n=5)
-    
+    top_n = compute_distance(U, i=index_document0,
+                             sort=True, top_n=num_results)
+
     # Print
     results = []
     counter = 0
