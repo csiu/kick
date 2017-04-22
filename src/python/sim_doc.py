@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../python/")
+sys.path.append("/Users/csiu/repo/kick/src/python")
 
 import custom
 import pandas as pd
