@@ -11,8 +11,12 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.utils.extmath import randomized_svd
 from sklearn.metrics import pairwise_distances
 
+usage = """
+For finding similar documents
+"""
+
 def get_args():
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description=usage)
 
     parser.add_argument('-s', '--num_singular_values', default=100, type=int,
                         help="Number of singular values to use from SVD")
@@ -79,7 +83,7 @@ def preprocess_data(df):
     text_processing = join_output(custom.text_processing)
     df['doc_processed'] = df['document'].apply(
             lambda x: text_processing(x, method="stem"))
-    
+
     return(df['doc_processed'])
 
 def compute_distance(U, i=0, sort=False, top_n=None, metric='euclidean'):
@@ -110,11 +114,11 @@ if __name__ == '__main__':
     # Get and preprocess data
     df = get_data()
     _ =  preprocess_data(df)
-    
+
     # Make count matrix
     cv = CountVectorizer()
     X = cv.fit_transform(df['doc_processed'])
-    
+
     # SVD
     U, s, Vh = randomized_svd(X, n_components=num_singular_values,
                               n_iter=5, random_state=5)
@@ -130,6 +134,6 @@ if __name__ == '__main__':
         row["dist"] = top_n.iloc[counter]["dist"]
         results.append(row)
         counter += 1
-    
+
         print('>> %s | %s' % (row['id'], row['doc_processed']),
               row['document'], "\n", sep="\n")
