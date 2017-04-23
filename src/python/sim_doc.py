@@ -31,6 +31,8 @@ def get_args():
     parser.add_argument('-c', '--cache_dir', default=".",
                         help="Specify cache dir")
 
+    parser.add_argument('-v', '--verbose', action='store_true')
+
     args = parser.parse_args()
 
     return(args)
@@ -115,36 +117,38 @@ if __name__ == '__main__':
     index_document0 = args.index_document0
     num_results = args.num_results
     cache_dir = args.cache_dir
+    verbose = args.verbose
 
     preprocess_file = os.path.join(os.path.abspath(cache_dir),
                                    "preprocessed.pkl")
 
 
+    msg = "# Getting and preprocessing data..."
     if os.path.isfile(preprocess_file):
+        if verbose: print(msg, "from cache...")
         df = pd.read_pickle(preprocess_file)
     else:
+        if verbose: print(msg)
         df = get_data()
         _ =  preprocess_data(df)
 
         df.to_pickle(preprocess_file)
 
-    # Get and preprocess data
-    df = get_data()
-    _ =  preprocess_data(df)
 
-    # Make count matrix
+    if verbose: print("# Making count matrix...")
     cv = CountVectorizer()
     X = cv.fit_transform(df['doc_processed'])
 
-    # SVD
+    if verbose: print("# Computing SVD for %s singular values..." %
+                      num_singular_values)
     U, s, Vh = randomized_svd(X, n_components=num_singular_values,
                               n_iter=5, random_state=5)
 
-    # Compute distance and get top results
+    if verbose: print("# Computing distances...")
     top_n = compute_distance(U, i=index_document0,
                              sort=True, top_n=num_results)
 
-    # Print
+    if verbose: print("# Printing results...")
     results = []
     counter = 0
     for index, row in df.iloc[top_n.index].iterrows():
