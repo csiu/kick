@@ -6,6 +6,7 @@ import custom
 import pandas as pd
 import numpy as np
 import re
+import os
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.utils.extmath import randomized_svd
@@ -26,6 +27,9 @@ def get_args():
 
     parser.add_argument('-i', '--index_document0', default=0, type=int,
                         help="Index of query document")
+
+    parser.add_argument('-c', '--cache_dir', default=".",
+                        help="Specify cache dir")
 
     args = parser.parse_args()
 
@@ -110,6 +114,19 @@ if __name__ == '__main__':
     num_singular_values = args.num_singular_values
     index_document0 = args.index_document0
     num_results = args.num_results
+    cache_dir = args.cache_dir
+
+    preprocess_file = os.path.join(os.path.abspath(cache_dir),
+                                   "preprocessed.pkl")
+
+
+    if os.path.isfile(preprocess_file):
+        df = pd.read_pickle(preprocess_file)
+    else:
+        df = get_data()
+        _ =  preprocess_data(df)
+
+        df.to_pickle(preprocess_file)
 
     # Get and preprocess data
     df = get_data()
