@@ -9,6 +9,7 @@ import re
 import os
 
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils.extmath import randomized_svd
 from sklearn.metrics import pairwise_distances
 
@@ -24,6 +25,10 @@ def get_args():
 
     parser.add_argument('-n', '--num_results', default=None, type=int,
                         help="Number of similar documents to print in the results")
+
+    parser.add_argument('-w', '--term_weight', default="tfidf",
+                        choices=["tfidf", "raw"],
+                        help="How should terms in document be weighted? 'tfidf' or 'raw' counts")
 
     parser.add_argument('-i', '--document0_id', default=None, type=int,
                         help="Kickstarter ID of query document")
@@ -123,6 +128,7 @@ if __name__ == '__main__':
     num_results = args.num_results
     cache_dir = args.cache_dir
     verbose = args.verbose
+    term_weight = args.term_weight
 
     preprocess_file = os.path.join(os.path.abspath(cache_dir),
                                    "preprocessed.pkl")
@@ -139,10 +145,14 @@ if __name__ == '__main__':
 
         df.to_pickle(preprocess_file)
 
-
-    if verbose: print("# Making count matrix...")
-    cv = CountVectorizer()
-    X = cv.fit_transform(df['doc_processed'])
+    if term_weight == "raw":
+        if verbose: print("# Making count matrix...")
+        cv = CountVectorizer()
+        X = cv.fit_transform(df['doc_processed'])
+    else:
+        if verbose: print("# Making TF-IDF matrix...")
+        vectorizer = TfidfVectorizer()
+        X = vectorizer.fit_transform(df['doc_processed'])
 
     if verbose: print("# Computing SVD for %s singular values..." %
                       num_singular_values)
