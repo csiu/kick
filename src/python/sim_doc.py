@@ -30,6 +30,9 @@ def get_args():
                         choices=["tfidf", "raw"],
                         help="How should terms in document be weighted? 'tfidf' or 'raw' counts")
 
+    parser.add_argument('-d', '--distance', default="cosine",
+                        help="Metric for calculating the distance between documents.")
+
     parser.add_argument('-i', '--document0_id', default=None, type=int,
                         help="Kickstarter ID of query document")
 
@@ -129,6 +132,7 @@ if __name__ == '__main__':
     cache_dir = args.cache_dir
     verbose = args.verbose
     term_weight = args.term_weight
+    distance_metric = args.distance
 
     preprocess_file = os.path.join(os.path.abspath(cache_dir),
                                    "preprocessed.pkl")
@@ -159,9 +163,10 @@ if __name__ == '__main__':
     U, s, Vh = randomized_svd(X, n_components=num_singular_values,
                               n_iter=5, random_state=5)
 
-    if verbose: print("# Computing distances...")
+    if verbose: print("# Computing distances (%s)..." % distance_metric)
     top_n = compute_distance(U, i=document0_id,
-                             sort=True, top_n=num_results)
+                             sort=True, top_n=num_results,
+                             metric=distance_metric)
 
     if verbose: print("# Printing results...")
     results = []
