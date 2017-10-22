@@ -40,3 +40,21 @@ def text_processing(text, method=None):
         words = [wnl.lemmatize(w) for w in words]
 
     return(words)
+
+
+# -----------------------------------------------------------------------------
+# Save and load sparse matrix
+
+import numpy as np
+from scipy.sparse import csr_matrix
+
+def save_sparse_csr(filename, array):
+    # note that .npz extension is added automatically
+    np.savez(filename, data=array.data, indices=array.indices,
+             indptr=array.indptr, shape=array.shape)
+
+def load_sparse_csr(filename):
+    # here we need to add .npz extension manually
+    loader = np.load(filename + '.npz')
+    return csr_matrix((loader['data'], loader['indices'], loader['indptr']),
+                      shape=loader['shape'])
