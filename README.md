@@ -1,7 +1,8 @@
-Kick
-====
+# Kick
 
 The intent of this project is to interface with PostgreSQL by exploring [Kickstarter](https://www.kickstarter.com) data.
+
+## Additional information
 
 There are examples for:
 
